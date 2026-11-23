@@ -43,7 +43,7 @@ Poi, in `/etc/messina-banco/banco.json`, vanno scritti l'URL di Supabase, la chi
 | Lettore con PC finti (Lenovo, HP, Dell, PC senza seriale) | `python3 lettore/prova_lettore.py` | Passata qui |
 | Banco completo sul database di prova (scoperta, lotto giusto, internet che cade, rifiuto, stato, accensione dalla rete) | `python3 banco/prova_banco.py` (repository privato) | Passata qui |
 | Database (permessi, regole, Excel) | `bash supabase/tests/run.sh` (repository privato) | Passata qui |
-| Sistema del lettore costruito e acceso in una macchina virtuale: avvio dalla rete UEFI, lettura, spegnimento, disco non toccato | `immagine/prova_qemu.sh` | **Da fare**: GitHub Actions è fermo per il limite di spesa dell'account. Si fa sul server del banco o quando GitHub riparte |
+| Sistema del lettore costruito e acceso in una macchina virtuale: avvio dalla rete UEFI, lettura, spegnimento, disco non toccato | `immagine/prova_qemu.sh` | Passata su GitHub il 23/11 (repository pubblico messina-banco): un ThinkPad e un HP virtuali, il secondo partito da solo dalla rete col disco vuoto (firmware UEFI → shim → GRUB firmati → kernel); letti, spenti, disco intatto |
 | Installazione del server (`installa.sh`) e avvio dalla rete con dnsmasq | sul PC del banco | **Da fare**: da qui i pacchetti Debian non si scaricano |
 | PC veri: un Lenovo, un HP e un Dell già formattati | sul banco | **Da fare** |
 

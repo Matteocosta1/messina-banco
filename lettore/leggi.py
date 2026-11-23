@@ -134,14 +134,24 @@ def salute(dev):
     try: j = json.loads(out or '{}')
     except ValueError: j = {}
     if not j.get('smart_status') and not j.get('nvme_smart_health_information_log') and not j.get('ata_smart_attributes'):
-        return None, None
+        return None, None, None
     ore = (j.get('power_on_time') or {}).get('hours')
+    n = j.get('nvme_smart_health_information_log') or {}
+    crudi = {k: n.get(k) for k in ('critical_warning', 'percentage_used', 'available_spare', 'available_spare_threshold', 'media_errors') if k in n}
+    crudi.update({f'ata_{a.get("id")}': (a.get('raw') or {}).get('value') for a in (j.get('ata_smart_attributes') or {}).get('table', []) if a.get('id') in (5, 197, 198)})
+    crudi['passato'] = (j.get('smart_status') or {}).get('passed')
+    stato, ore = _salute(j, ore)
+    return stato, ore, crudi
+
+def _salute(j, ore):
     stato = 'Buono'
     if j.get('smart_status', {}).get('passed') is False: return 'Guasto', ore
     n = j.get('nvme_smart_health_information_log') or {}
     if n:
         if n.get('critical_warning'): return 'Guasto', ore
-        if (n.get('percentage_used') or 0) >= 90 or (n.get('media_errors') or 0) > 0 or (n.get('available_spare', 100) < (n.get('available_spare_threshold') or 10)):
+        riserva, soglia = n.get('available_spare'), n.get('available_spare_threshold')
+        sotto_soglia = riserva is not None and soglia and riserva < soglia      # soglia 0 o assente: il disco non ne dichiara una
+        if (n.get('percentage_used') or 0) >= 90 or (n.get('media_errors') or 0) > 0 or sotto_soglia:
             stato = 'Da controllare'
     for a in (j.get('ata_smart_attributes') or {}).get('table', []):
         crudo = (a.get('raw') or {}).get('value') or 0
@@ -162,9 +172,9 @@ def dischi():
         if settori < 2 * 1024 * 1024 * 8: continue            # sotto 8 GB non è un disco (lettori di schede, eMMC di servizio)
         tipo = 'SSD NVMe' if nome.startswith('nvme') else ('HDD' if leggi(b + '/queue/rotational') == '1' else 'SSD')
         if nome.startswith('mmcblk'): tipo = 'eMMC'
-        stato, ore = salute(nome)
+        stato, ore, crudi = salute(nome)
         trovati.append({'nome': nome, 'testo': f'{tipo} {misura(settori * 512)}', 'salute': stato, 'ore': ore,
-                        'modello': leggi(b + '/device/model')})
+                        'modello': leggi(b + '/device/model'), 'smart': crudi})
     if not trovati: return {'disco': 'Nessun disco', 'disco_salute': None, 'disco_ore': None, 'dischi': []}
     peggio = next((x for x in ('Guasto', 'Da controllare') if any(d['salute'] == x for d in trovati)),
                   'Buono' if all(d['salute'] == 'Buono' for d in trovati) else None)

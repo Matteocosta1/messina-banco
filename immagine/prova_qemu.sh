@@ -35,7 +35,8 @@ controlla() {   # $1 = file arrivate, $2 = disco, $3 = atteso (json)
 python3 - "$1" "$2" "$3" <<'PY'
 import json, sys
 x = json.loads(open(sys.argv[1]).readlines()[-1])['p_dati']
-print(json.dumps({k: x.get(k) for k in ('seriale', 'marca', 'modello', 'codice_modello', 'cpu', 'ram', 'disco', 'disco_salute', 'mac', 'versione')}, ensure_ascii=False, indent=1))
+print(json.dumps({k: x.get(k) for k in ('seriale', 'marca', 'modello', 'codice_modello', 'cpu', 'ram', 'disco', 'disco_salute', 'disco_ore', 'mac', 'versione')}, ensure_ascii=False, indent=1))
+print('SMART:', [d.get('smart') for d in x.get('dischi', [])])
 atteso = json.loads(sys.argv[3])
 sbagliati = {k: (x.get(k), v) for k, v in atteso.items() if x.get(k) != v}
 if sbagliati: print('SBAGLIATI:', sbagliati); sys.exit(1)
