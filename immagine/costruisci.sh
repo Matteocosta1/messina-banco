@@ -29,8 +29,10 @@ lb build 2>&1 | tee build.log | grep -E '^(P:|E:|W:)' || true
 ISO="$(ls -1 "$LAVORO"/*.iso | head -1)"
 [ -f "$ISO" ] || { echo "Costruzione non riuscita: vedi $LAVORO/build.log"; tail -40 build.log; exit 1; }
 cp "$ISO" "$USCITA/messina-lettore.iso"
-cp binary/live/vmlinuz* "$USCITA/live/vmlinuz"
-cp binary/live/initrd.img* "$USCITA/live/initrd.img"
+ls -la binary/live/
+# live-build lascia più copie (es. vmlinuz e vmlinuz-6.12…): si prende l'ultima versione
+cp "$(ls -1v binary/live/vmlinuz* | tail -1)" "$USCITA/live/vmlinuz"
+cp "$(ls -1v binary/live/initrd.img* | tail -1)" "$USCITA/live/initrd.img"
 cp binary/live/filesystem.squashfs "$USCITA/live/filesystem.squashfs"
 # i programmi di avvio dalla rete, firmati per il Secure Boot (Debian): li usa il server del banco
 apt-get install -y -q shim-signed grub-efi-amd64-signed pxelinux syslinux-common >/dev/null
