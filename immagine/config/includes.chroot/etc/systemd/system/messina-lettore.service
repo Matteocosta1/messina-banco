@@ -1,0 +1,14 @@
+[Unit]
+Description=Messina · Lettore
+After=systemd-udevd.service systemd-udev-settle.service
+ConditionKernelCommandLine=!messina.niente
+
+[Service]
+Type=oneshot
+ExecStartPre=-/bin/setupcon --force --current-tty
+ExecStart=/usr/bin/python3 /usr/local/bin/leggi.py
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

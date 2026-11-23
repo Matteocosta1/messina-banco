@@ -1,0 +1,13 @@
+{
+  "nome": "Banco stage",
+  "supabase_url": "https://<progetto>.supabase.co",
+  "chiave_pubblica": "sb_publishable_...",
+  "codice_banco": "<il codice che dà il gestionale quando si aggiunge il banco: si scrive solo qui, mai in chat>",
+  "porta": 8088,
+  "accendi_dalla_rete": false,
+  "postazioni": {
+    "Gi1/0/1": 1,
+    "Gi1/0/2": 2
+  },
+  "postazione_dal_numero_porta": true
+}

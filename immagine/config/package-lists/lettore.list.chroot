@@ -1,0 +1,19 @@
+# Sistema del lettore: il minimo per leggere il PC e parlare col server del banco
+live-boot
+live-config
+live-config-systemd
+systemd-sysv
+busybox
+python3-minimal
+python3
+smartmontools
+dmidecode
+pciutils
+iproute2
+console-setup
+kbd
+# schede di rete che chiedono il firmware (Realtek anche negli adattatori USB-C, Broadcom, altre)
+firmware-realtek
+firmware-misc-nonfree
+firmware-bnx2
+firmware-bnx2x

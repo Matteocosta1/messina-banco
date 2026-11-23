@@ -1,0 +1,31 @@
+# Lettore del banco: costruisce il sistema (Debian 13) e lo prova davvero in una macchina virtuale
+# che parte dalla rete, legge, manda la lettura al server del banco e si spegne da sola.
+# I file (avvio dalla rete + chiavetta) restano 30 giorni in Actions → Lettore → «messina-lettore».
+name: Lettore
+on:
+  push:
+    paths-ignore: ['**.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  immagine:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove del lettore con PC finti
+        run: python3 lettore/prova_lettore.py
+      - name: Costruisce il sistema del lettore (Debian 13, in un container)
+        run: docker run --rm --privileged -v "$PWD:/w" -w /w debian:trixie bash immagine/costruisci.sh
+      - name: Prova vera in una macchina virtuale (avvio dalla rete)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q qemu-system-x86 qemu-utils ovmf dnsmasq-base
+          dnsmasq --test -C <(python3 server/prepara_rete.py --scheda lo --ip 127.0.0.1 --rete 127.0.0.0/8 --tftp /tmp/t --dnsmasq /dev/stdout | sed "/^Avvio dalla rete/d")
+          sudo chmod 666 /dev/kvm 2>/dev/null || true
+          bash immagine/prova_qemu.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: messina-lettore
+          path: immagine/uscita
+          retention-days: 30

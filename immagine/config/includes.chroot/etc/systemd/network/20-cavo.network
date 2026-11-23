@@ -1,0 +1,11 @@
+# ogni presa di rete col cavo prende l'indirizzo dal router del banco
+[Match]
+Type=ether
+Name=en* eth*
+
+[Network]
+DHCP=ipv4
+LinkLocalAddressing=no
+
+[DHCPv4]
+UseDomains=no
