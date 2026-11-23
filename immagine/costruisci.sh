@@ -23,7 +23,7 @@ lb config \
   --linux-flavours amd64
 
 cp -r "$QUI/config/." config/
-install -m 755 "$QUI/../lettore/leggi.py" config/includes.chroot/usr/local/bin/leggi.py
+install -D -m 755 "$QUI/../lettore/leggi.py" config/includes.chroot/usr/local/bin/leggi.py   # -D: git non tiene le cartelle vuote
 lb build 2>&1 | tee build.log | grep -E '^(P:|E:|W:)' || true
 
 ISO="$(ls -1 "$LAVORO"/*.iso | head -1)"
